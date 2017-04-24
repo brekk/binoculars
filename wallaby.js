@@ -18,7 +18,8 @@ module.exports = function runWallaby(wallaby) {
     },
     testFramework: `ava`,
     tests: [
-      `src/**/*.spec.js`
+      `src/**/*.spec.js`,
+      `!src/utils-real-fs.spec.js`
     ]
   }
 }

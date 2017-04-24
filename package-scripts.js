@@ -8,13 +8,15 @@ const chmod = curry((permissions, file) => `chmod ${permissions} ${file}`)
 const makeExecutable = chmod(`755`)
 const {
   concurrent: all,
-  series
+  series,
+  rimraf: rm
 } = utils
 const {
   nps: allNPS
 } = all
 const COSTFILE = `./costs`
-const EXECUTABLE = `./bin/binoculars.js`
+const BINARY_DIR = `./bin`
+const EXECUTABLE = `${BINARY_DIR}/cli.js`
 // const DISTRIBUTABLE = `./dist/binoculars.js`
 /* eslint-disable max-len */
 module.exports = {
@@ -28,7 +30,9 @@ module.exports = {
       script: utils.series(
         `nps build.files`,
         makeExecutable(EXECUTABLE),
+        // makeExecutable(EXECUTABLE2),
         prepend(SHEBANG, EXECUTABLE)
+        // prepend(SHEBANG, EXECUTABLE2)
       )
     },
     // buildWithRollup: {
@@ -41,8 +45,8 @@ module.exports = {
     cost: {
       description: `regenerate the costfile`,
       script: series(
-        createWithText(`neuron cost`, COSTFILE),
-        append(`cost-of-modules --no-install --yarn`, COSTFILE),
+        createWithText(`binoculars cost`, COSTFILE),
+        append(`\`cost-of-modules --no-install --yarn\``, COSTFILE),
         `cat ./costs`
       )
     },
@@ -57,10 +61,15 @@ module.exports = {
     meta: {
       auto: {
         description: `regenerate the tool and then run it on itself`,
-        script: series(`nps build`, `nps meta`)
+        script: series(
+          rm(BINARY_DIR),
+          `nps build`,
+          `${EXECUTABLE} ./tests/**/*`,
+          `${EXECUTABLE} ./src/*.js`
+        )
       },
       description: `run the tool on itself`,
-      script: `${EXECUTABLE} -s ./src/binoculars.js -c ./src`
+      script: `nps meta.auto`
     },
     mkdir: {
       coverage: `mkdirp coverage`,
@@ -77,14 +86,18 @@ module.exports = {
     test: {
       covered: {
         description: `run covered tests`,
-        script: `nyc ava --verbose`
+        script: `cross-env NODE_ENV=test nyc ava --verbose src/*.spec.js`
       },
       description: `run lint and tests`,
       log: {
         description: `run tests and save logfile`,
         script: `npm run test:covered > test-output.log`
       },
-      script: allNPS(`lint`, `test.covered`)
+      script: allNPS(`lint`, `test.covered`),
+      watch: {
+        description: `run your tests continuously`,
+        script: `ava --watch`
+      }
     }
   }
 }
