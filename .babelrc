@@ -7,5 +7,10 @@
     "transform-async-to-generator",
     "syntax-async-functions",
     ["transform-es2015-classes", {"loose": false}]
-  ]
+  ],
+  "env": {
+    "test": {
+      "plugins": [ "istanbul" ]
+    }
+  }
 }
