@@ -22,18 +22,23 @@ const EXECUTABLE = `${BINARY_DIR}/cli.js`
 module.exports = {
   scripts: {
     build: {
-      description: `do a per file conversion from /src to /lib`,
-      files: {
-        description: `convert files`,
-        script: `babel src -d bin --ignore *.spec.js`
+      cli: {
+        description: `convert cli`,
+        script: `babel src/cli.js -d bin --ignore *.spec.js,*.fixture.js`
       },
+      description: `do a per file conversion from /src to /lib`,
       script: utils.series(
-        `nps build.files`,
+        `nps build.source`,
+        `nps build.cli`,
         makeExecutable(EXECUTABLE),
         // makeExecutable(EXECUTABLE2),
         prepend(SHEBANG, EXECUTABLE)
         // prepend(SHEBANG, EXECUTABLE2)
-      )
+      ),
+      source: {
+        description: `convert files`,
+        script: `babel src -d dist --ignore *.spec.js,*.fixture.js,cli.js`
+      }
     },
     // buildWithRollup: {
     //   description: `generate executable`,
