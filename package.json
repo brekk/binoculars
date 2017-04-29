@@ -78,6 +78,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "get-es-imports-exports": "^1.0.7",
     "husky": "^0.13.3",
+    "mkdirp": "^0.5.1",
     "nps": "^5.1.0",
     "nps-utils": "^1.2.0",
     "nyc": "^10.2.0",
