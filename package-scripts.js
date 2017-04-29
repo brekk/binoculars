@@ -24,11 +24,12 @@ module.exports = {
     build: {
       cli: {
         description: `convert cli`,
-        script: `babel src/cli.js -d bin --ignore *.spec.js,*.fixture.js`
+        script: `babel src --ignore *.spec.js,*.fixture.js -d bin`
       },
       description: `do a per file conversion from /src to /lib`,
       script: utils.series(
         `nps build.source`,
+        `mkdirp bin`,
         `nps build.cli`,
         makeExecutable(EXECUTABLE),
         // makeExecutable(EXECUTABLE2),
