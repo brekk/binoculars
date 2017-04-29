@@ -30,9 +30,9 @@ module.exports = {
       script: utils.series(
         `nps build.source`,
         `nps build.cli`,
-        makeExecutable(EXECUTABLE),
+        makeExecutable(EXECUTABLE)
         // makeExecutable(EXECUTABLE2),
-        prepend(SHEBANG, EXECUTABLE)
+        // prepend(SHEBANG, EXECUTABLE)
         // prepend(SHEBANG, EXECUTABLE2)
       ),
       source: {
