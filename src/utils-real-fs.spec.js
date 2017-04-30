@@ -79,9 +79,14 @@ test.cb(`lookUpDependencies`, (t) => {
       {
         'binoculars/src/utils-real-fs.spec.js': [],
         'binoculars/src/utils.js':
-        [ `addModules`,
+        [ `__base`,
+          `__detail`,
+          `__minutiae`,
+          `addModules`,
           `alterLocalKey`,
+          `base__`,
           `collectKeys`,
+          `detail__`,
           `findModules`,
           `fixLocalKeys`,
           `flobby`,
@@ -89,6 +94,7 @@ test.cb(`lookUpDependencies`, (t) => {
           `lookUpDependencies`,
           `makeRelativeConditionally`,
           `merge`,
+          `minutiae__`,
           `relativeKeys`,
           `relativizeDataPaths`,
           `sliceNodeModules`,
@@ -142,6 +148,7 @@ test.cb(`flobby`, (t) => {
   const expected = truncate([
     `src/binoculars.js`,
     `src/cli.js`,
+    `src/debug.js`,
     `src/utils-real-fs.spec.js`,
     `src/utils.fixture.js`,
     `src/utils.js`,
