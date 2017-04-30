@@ -86,7 +86,6 @@ test.cb(`lookUpDependencies`, (t) => {
           `fixLocalKeys`,
           `flobby`,
           `generateRelativePaths`,
-          `lookUpAllDependencies`,
           `lookUpDependencies`,
           `makeRelativeConditionally`,
           `merge`,

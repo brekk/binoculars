@@ -74,13 +74,13 @@ const debuggables = [
 ]
 
 /* eslint-disable no-unused-vars */
-const [base__, detail__, minutiae__] = R.pipe(
+export const [base__, detail__, minutiae__] = R.pipe(
   R.map(bug),
   R.map(xtrace)
 )(debuggables)
 /* eslint-enable no-unused-vars */
 
-const [__base, __detail, __minutiae] = R.pipe(
+export const [__base, __detail, __minutiae] = R.pipe(
   R.map(bug),
   R.map((s) => xtrace(s, __placeholder__, R.identity, __placeholder__))
 )(debuggables)
@@ -126,15 +126,10 @@ export const lookUpDependencies = R.curry(
     (files) => ({
       files
     }),
+    __base(`@@ lookUp A Dependency`),
     merge(defaultConfig(config)),
+    __detail(`----------------------`),
     getImportsAndExportsF
-  )(fileMatches)
-)
-
-export const lookUpAllDependencies = R.curry(
-  (config, fileMatches) => R.pipe(
-    R.map(lookUpDependencies(config)),
-    F.parallel(10)
   )(fileMatches)
 )
 

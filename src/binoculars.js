@@ -1,4 +1,5 @@
 import F from 'fluture'
+import chalk from 'chalk'
 import assoc from 'ramda/src/assoc'
 import pipe from 'ramda/src/pipe'
 import map from 'ramda/src/map'
@@ -8,7 +9,9 @@ import {
   relativizeDataPaths,
   flobby,
   lookUpDependencies,
-  lookUpAllDependencies
+  __base, // eslint-disable-line
+  __detail, // eslint-disable-line
+  __minutiae // eslint-disable-line
 } from './utils'
 
 const R = {
@@ -26,38 +29,44 @@ const defaultConfig = merge({
 
 const addDirectory = R.assoc(`directory`)
 
-const ternary = R.curry((x, a, b) => x ? a : b)
+const echo = R.curry((log, fn, a, b) => {
+  log(fn(a), b && b.value ? b.value : b) // eslint-disable-line
+  return b
+})
+const hook = echo(console.log)
+const no = hook(chalk.red) // eslint-disable-line
+const yes = hook(chalk.green) // eslint-disable-line
 
-export const binoculars = R.curry((config, workingDir, exe) => {
-  const {
-    absolute,
-    args,
-    multiple
-  } = defaultConfig(exe)
-  const swap = ternary(multiple)
-  const lookup = swap(lookUpAllDependencies, lookUpDependencies)
-  // const swapAndMap = (a) => swap(R.map(a), a)
+export const monocle = R.curry((config, workingDir, absolute, args) => {
   const addWorkingDirectory = addDirectory(workingDir)
-  // const directorize = swapAndMap(addWorkingDirectory)
   const relate = relativizeDataPaths(!absolute, workingDir)
-  // const relative = swapAndMap(relate)
   return F.of(args)
     .chain(flobby)
-    .chain(lookup(config))
+    .bimap(no(`! glob error`), yes(`files`))
+    .chain(lookUpDependencies(config))
+    .bimap(no(`lookup`), yes(`dependencies added`))
     .map(addWorkingDirectory)
-    // .map(directorize)
+    .bimap(no(`adding directory failed`), yes(`add directory clause`))
     .map(relate)
-    // .map(relative)
+    .bimap(no(`relative`), yes(`out!`))
 })
 
-// export const binoculars = R.curry((config, workingDir, exe) => {
-//   const {
-//     absolute,
-//     args
-//   } = defaultConfig(exe)
-//   return F.of(args)
-//     .chain(flobby)
-//     .chain(lookUpAllDependencies(config))
-//     .map(addDirectory(workingDir))
-//     .map(relativizeDataPaths(!absolute, workingDir))
-// })
+export const binoculars = R.curry((config, workingDir, exe) => {
+  return R.pipe(
+    defaultConfig,
+    // __base(`>>>>`)
+    ({
+      absolute, multiple, args
+    }) => {
+      const focus = monocle(config, workingDir, absolute)
+      return (
+        multiple ?
+        R.pipe(
+          R.map(focus),
+          F.parallel(10)
+        ) :
+        focus
+      )(args)
+    }
+  )(exe)
+})

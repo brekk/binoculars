@@ -70,14 +70,27 @@ module.exports = {
         script: series(
           rm(BINARY_DIR),
           `nps build`,
-          `echo "regular run ============================================="`,
-          `${EXECUTABLE} ./src/*.js`,
-          `echo "multiple run ============================================="`,
-          `${EXECUTABLE} ./src/*.js --multiple`
+          `nps meta.single`,
+          `sleep 5`,
+          `nps meta.multi`
         )
       },
       description: `run the tool on itself`,
-      script: `nps meta.auto`
+      multi: {
+        description: `run a multi meta call`,
+        script: series(
+          `echo "multiple run ============================================="`,
+          `DEBUG=binoculars:* ${EXECUTABLE} ./src/*.js --multiple`
+        )
+      },
+      script: `nps meta.auto`,
+      single: {
+        description: `run a single meta call`,
+        script: series(
+          `echo "regular run ============================================="`,
+          `${EXECUTABLE} ./src/*.js`
+        )
+      }
     },
     mkdir: {
       coverage: `mkdirp coverage`,
