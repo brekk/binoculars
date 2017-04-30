@@ -4,7 +4,6 @@ import {
   addModules,
   collectKeys,
   findModules,
-  flobby,
   generateRelativePaths,
   makeRelativeConditionally,
   relativeKeys,
@@ -16,11 +15,6 @@ import {
 } from './utils'
 
 import {relative as fixture, absolutePathedObject} from './utils.fixture'
-
-// so absolute paths are useful, but we will never be able to test cross computer
-const truncate = map((x) => {
-  return x.split(`/`).slice(-2).join(`/`)
-})
 
 /* eslint-disable fp/no-unused-expression */
 
@@ -81,26 +75,7 @@ test(`testStringForModules`, (t) => {
     `fs`
   ])
 })
-test.cb(`flobby`, (t) => {
-  t.plan(2)
-  t.is(typeof flobby, `function`)
-  const inputs = [`./src/*.js`, `./test/**/*.js`]
-  const expected = truncate([
-    `src/binoculars.js`,
-    `src/cli.js`,
-    `src/utils-real-fs.spec.js`,
-    `src/utils.fixture.js`,
-    `src/utils.js`,
-    `src/utils.spec.js`
-  ])
-  flobby(inputs).fork(
-    t.end,
-    (output) => {
-      t.deepEqual(truncate(output), expected)
-      t.end()
-    }
-  )
-})
+
 test(`generateRelativePaths`, (t) => {
   t.plan(2)
   t.is(typeof generateRelativePaths, `function`)

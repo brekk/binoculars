@@ -1,6 +1,7 @@
 import test from 'ava'
 import {pipe, toPairs, fromPairs, map} from 'ramda'
 import {
+  flobby,
   lookUpDependencies,
   relativeKeys,
   relativizeDataPaths,
@@ -12,6 +13,9 @@ const thisFileIsh = `..`
 const alter = relativeKeys(true, thisFileIsh)
 const alter2 = makeRelativeConditionally(true, thisFileIsh)
 const manipulateObjects = (x) => typeof x === `object` && !Array.isArray(x) ? alter(x) : x
+
+// so absolute paths are useful, but we will never be able to test cross computer
+const truncate = map((x) => x.split(`/`).slice(-2).join(`/`))
 
 const fixIt = pipe(
   toPairs,
@@ -63,7 +67,8 @@ test.cb(`lookUpDependencies`, (t) => {
         'ava/index.js': [ `default` ],
         'ramda/index.js': [ `fromPairs`, `map`, `pipe`, `toPairs` ],
         'binoculars/src/utils.js':
-        [ `lookUpDependencies`,
+        [ `flobby`,
+          `lookUpDependencies`,
           `makeRelativeConditionally`,
           `relativeKeys`,
           `relativizeDataPaths` ],
@@ -127,5 +132,27 @@ test(`relativizeDataPaths`, (t) => {
     modules: [`ploplop`]
   })
 })
+
+test.cb(`flobby`, (t) => {
+  t.plan(2)
+  t.is(typeof flobby, `function`)
+  const inputs = [`./src/*.js`, `./test/**/*.js`]
+  const expected = truncate([
+    `src/binoculars.js`,
+    `src/cli.js`,
+    `src/utils-real-fs.spec.js`,
+    `src/utils.fixture.js`,
+    `src/utils.js`,
+    `src/utils.spec.js`
+  ])
+  flobby(inputs).fork(
+    t.end,
+    (output) => {
+      t.deepEqual(truncate(output), expected)
+      t.end()
+    }
+  )
+})
+
 /* eslint-enable fp/no-unused-expression */
 /* eslint-enable sort-keys */
