@@ -96,6 +96,7 @@
     "builtin-modules": "^1.1.1",
     "commander": "^2.9.0",
     "fluture": "^5.0.0",
+    "get-es-imports-exports": "^1.0.7",
     "globby": "^6.1.0",
     "partial.lenses": "^10.1.1",
     "ramda": "^0.23.0",
