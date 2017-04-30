@@ -71,7 +71,7 @@ module.exports = {
           rm(BINARY_DIR),
           `nps build`,
           `${EXECUTABLE} ./tests/**/*`,
-          `${EXECUTABLE} ./src/*.js`
+          `DEBUG=binoculars:* ${EXECUTABLE} ./src/*.js`
         )
       },
       description: `run the tool on itself`,

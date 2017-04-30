@@ -13,7 +13,3 @@ dependencies:
 test:
   override:
     - yarn test
-
-# release:
-#     verifyConditions: "condition-circle"
-#     analyzeCommits: "simple-commit-message"

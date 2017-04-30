@@ -5,7 +5,6 @@ import absolutify from 'to-absolute-glob'
 import builtIns from 'builtin-modules'
 
 import * as L from 'partial.lenses'
-
 import F from 'fluture'
 
 import curry from 'ramda/src/curry'
@@ -15,26 +14,19 @@ import fromPairs from 'ramda/src/fromPairs'
 import pipe from 'ramda/src/pipe'
 import uniq from 'ramda/src/uniq'
 import head from 'ramda/src/head'
+import prop from 'ramda/src/prop'
 import assoc from 'ramda/src/assoc'
 import dissoc from 'ramda/src/dissoc'
 import identity from 'ramda/src/identity'
 import map from 'ramda/src/map'
-// import partition from 'ramda/src/partition'
 
 import getImportsAndExports from 'get-es-imports-exports'
+import bug from 'debug'
 
-const R__ = {
+const __placeholder__ = {
   [`@@functional/placeholder`]: true
 }
-
-export const xtrace = curry(
-  (l, a, z, y) => {
-    l(a, z(y)) // eslint-disable-line
-    return y
-  }
-)
-export const peek = xtrace(console.log)
-export const trace = xtrace(console.log, R__, identity, R__)
+const NODE_MODULES = `node_modules/`
 
 const {
   keys
@@ -47,11 +39,38 @@ const R = {
   filter,
   fromPairs,
   head,
+  identity,
   map,
   pipe,
+  prop,
   toPairs,
   uniq
 }
+
+export const xtrace = R.curry(
+  (l, a, z, y) => {
+    l(a, z(y)) // eslint-disable-line
+    return y
+  }
+)
+
+const debuggables = [
+  `binoculars:0`,
+  `binoculars:1`,
+  `binoculars:2`
+]
+
+/* eslint-disable no-unused-vars */
+const [base__, detail__, minutiae__] = R.pipe(
+  R.map(bug),
+  R.map(xtrace)
+)(debuggables)
+/* eslint-enable no-unused-vars */
+
+const [__base, __detail, __minutiae] = R.pipe(
+  R.map(bug),
+  R.map((s) => xtrace(s, __placeholder__, R.identity, __placeholder__))
+)(debuggables)
 
 // screw promises, Futures are the future
 const getImportsAndExportsF = F.fromPromise(getImportsAndExports)
@@ -59,12 +78,14 @@ const getImportsAndExportsF = F.fromPromise(getImportsAndExports)
 /**
  * @name flobby
  * @description it wraps `globby` behavior with absolute globs and returns a Future
+ * @param {string} glob - a glob string
+ * @returns {Future} Future(Array) - a future wrapped list of file paths
  * @signature flobby :: Array(String) -> Future(Array(String))
  */
 export const flobby = R.pipe(
-  // trace(`inputs`),
+  __base(`inputs`),
   map(absolutify),
-  // trace(`absolute paths`),
+  __detail(`absolute paths`),
   F.fromPromise(globby)
 )
 
@@ -74,13 +95,20 @@ export const flobby = R.pipe(
  * @returns {Future} Future(Object) - a future list of import / exports
  * @signature lookUpDependencies :: Array(string) -> Future(Object)
  */
-export const lookUpDependencies = (files) => {
-  // trace(`looking up files:`, files)
-  return getImportsAndExportsF({
-    exclude: builtIns,
-    files
-  })
-}
+export const lookUpDependencies = R.pipe(
+  __detail(`files`),
+  (files) => ({
+    exclude: [...builtIns, `*.scss`, `*.json`],
+    files,
+    parser: `babel-eslint`,
+    parserOptions: {
+      experimentalObjectRestSpread: true,
+      jsx: true
+    }
+  }),
+  detail__(`excluded`, R.prop(`exclude`)),
+  getImportsAndExportsF
+)
 
 /**
  * @name collectKeys
@@ -91,12 +119,19 @@ export const lookUpDependencies = (files) => {
  */
 export const collectKeys = R.curry(
   (pathing, data) => R.pipe(
+    __base(`collectKeys`),
     L.collect([pathing, keys]),
+    __detail(`collected`),
     R.head
   )(data)
 )
 
-const NODE_MODULES = `node_modules/`
+/**
+ * @name sliceNodeModules
+ * @param {array} ofStrings - an array of strings
+ * @returns {array} modifiedArray
+ * @signature sliceNodeModules :: Array(String) -> Array(String)
+ */
 export const sliceNodeModules = R.map(
   (m) => {
     const match = m.indexOf(NODE_MODULES)
@@ -104,13 +139,23 @@ export const sliceNodeModules = R.map(
       const l = m.slice(
         match + NODE_MODULES.length
       )
-      return l.slice(0, l.indexOf(`/`))
+      return __minutiae(
+        `found node_modules`,
+        l.slice(0, l.indexOf(`/`))
+      )
     }
     return m
   }
 )
 
 export const stripStats = R.dissoc(`stats`)
+
+/**
+ * @name testStringForModules
+ * @param {array} ofStrings - an array of strings
+ * @returns {array} filteredArray
+ * @signature testStringForModules :: Array(String) -> Array(String)
+ */
 export const testStringForModules = R.filter(
   (s) => (
     typeof s === `string` && (
@@ -118,27 +163,62 @@ export const testStringForModules = R.filter(
     )
   )
 )
+
+/**
+ * @name findModules
+ * @param {object} obj - object whose keys are paths
+ * @returns {array} modules - a list of modules
+ * @signature findModules :: Object -> Array(String)
+ */
 export const findModules = R.pipe(
+  __base(`findModules`),
   collectKeys(`imports`),
+  __detail(`collected`),
   testStringForModules,
   sliceNodeModules,
-  R.uniq
+  R.uniq,
+  __minutiae(`modules`)
 )
+
+/**
+ * @name makeRelativeConditionally
+ * @param {boolean} condition - something truthy or falsy
+ * @param {string} a - some path
+ * @param {string} b - some other path
+ * @returns {string} identity or relative path
+ * @signature makeRelativeConditionally :: Boolean -> String -> String -> String
+ */
 export const makeRelativeConditionally = R.curry(
   (condition, a, b) => (
     condition ? path.relative(a, b) : b
   )
 )
 
+/**
+ * @name relativeKeys
+ * @param {boolean} condition - something boolean-y
+ * @param {string} rel - relative path
+ * @param {object} obj - an object whose keys are paths
+ * @returns {object} altered - an object whose keys may have been altered
+ * @signature relativeKeys :: Boolean -> String -> Object -> Object
+ */
 export const relativeKeys = R.curry((condition, rel, obj) => R.pipe(
   R.toPairs,
   R.map(([k, v]) => ([
     makeRelativeConditionally(condition, rel, k),
     v
   ])),
+  detail__(`adjusted`, R.map(([k]) => k)),
   R.fromPairs
 )(obj))
 
+/**
+ * @name generateRelativePaths
+ * @param {boolean} isRelative - a truthy value
+ * @param {string} rel - some path
+ * @param {object} data - the main file structure we're understanding
+ * @signature generateRelativePaths :: Boolean -> String -> Object -> Object
+ */
 export const generateRelativePaths = R.curry((isRelative, rel, data) => {
   const {
     directory,
