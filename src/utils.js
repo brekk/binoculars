@@ -74,16 +74,24 @@ const debuggables = [
 ]
 
 /* eslint-disable no-unused-vars */
-export const [base__, detail__, minutiae__] = R.pipe(
+const [b__, d__, m__] = R.pipe(
   R.map(bug),
   R.map(xtrace)
 )(debuggables)
 /* eslint-enable no-unused-vars */
 
-export const [__base, __detail, __minutiae] = R.pipe(
+export const base__ = b__
+export const detail__ = d__
+export const minutiae__ = m__
+
+const [__b, __d, __m] = R.pipe(
   R.map(bug),
   R.map((s) => xtrace(s, __placeholder__, R.identity, __placeholder__))
 )(debuggables)
+
+export const __base = __b
+export const __detail = __d
+export const __minutiae = __m
 
 // screw promises, Futures are the future
 const getImportsAndExportsF = F.fromPromise(getImportsAndExports)

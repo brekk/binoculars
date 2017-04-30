@@ -8,10 +8,7 @@ import {
   merge,
   relativizeDataPaths,
   flobby,
-  lookUpDependencies,
-  __base, // eslint-disable-line
-  __detail, // eslint-disable-line
-  __minutiae // eslint-disable-line
+  lookUpDependencies
 } from './utils'
 
 const R = {
@@ -29,8 +26,22 @@ const defaultConfig = merge({
 
 const addDirectory = R.assoc(`directory`)
 
+const prepend = R.curry((b, a) => b + a)
+
+const bar = R.curry(
+  (color, pre, value) => R.pipe(
+    prepend(pre),
+    (x) => `\n=============== ${x} ================\n`,
+    color
+  )(value)
+)
+
 const echo = R.curry((log, fn, a, b) => {
-  log(fn(a), b && b.value ? b.value : b) // eslint-disable-line
+  const bValue = b && b.value ? b.value : b
+  const highlightedBar = bar(fn)
+  const before = highlightedBar(`START `)
+  const end = highlightedBar(`END `)
+  log(before(a), bValue, end(a)) // eslint-disable-line
   return b
 })
 const hook = echo(console.log)
@@ -51,22 +62,24 @@ export const monocle = R.curry((config, workingDir, absolute, args) => {
     .bimap(no(`relative`), yes(`out!`))
 })
 
-export const binoculars = R.curry((config, workingDir, exe) => {
-  return R.pipe(
+export const binoculars = R.curry(
+  (config, workingDir, exe) => R.pipe(
     defaultConfig,
-    // __base(`>>>>`)
     ({
       absolute, multiple, args
     }) => {
+      const box = (b) => ([b])
       const focus = monocle(config, workingDir, absolute)
+      const multifocus = R.pipe(
+        // we need to box the inputs, b/c the raw files need to be arrays
+        R.map(R.pipe(box, focus)),
+        F.parallel(Infinity)
+      )
       return (
         multiple ?
-        R.pipe(
-          R.map(focus),
-          F.parallel(10)
-        ) :
+        multifocus :
         focus
       )(args)
     }
   )(exe)
-})
+)

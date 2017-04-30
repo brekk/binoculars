@@ -75,12 +75,24 @@ module.exports = {
           `nps meta.multi`
         )
       },
+      debug: {
+        description: `run the meta calls with DEBUG=binoculars:*`,
+        multi: {
+          description: `run the meta.multi call with DEBUG=binoculars:*`,
+          script: `DEBUG=binoculars:* nps meta.multi`
+        },
+        script: `DEBUG=binoculars:* nps meta.auto`,
+        single: {
+          description: `run the meta.single call with DEBUG=binoculars:*`,
+          script: `DEBUG=binoculars:* nps meta.single`
+        }
+      },
       description: `run the tool on itself`,
       multi: {
         description: `run a multi meta call`,
         script: series(
           `echo "multiple run ============================================="`,
-          `DEBUG=binoculars:* ${EXECUTABLE} ./src/*.js --multiple`
+          `${EXECUTABLE} --multiple ./src/*.js`
         )
       },
       script: `nps meta.auto`,
