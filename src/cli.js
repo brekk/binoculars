@@ -11,9 +11,10 @@ const reference = cli
   .version(`1.0.0`)
   .option(`-a, --absolute`, `Use absolute paths`)
   .option(`-v, --verbose`, `Log status`)
+  .option(`-m, --map`, `Return data as a map array`)
   .parse(process.argv)
 
 const cwd = process.cwd()
 
 // eslint-disable-next-line fp/no-unused-expression
-binoculars(cwd, reference).fork(fail, console.log)
+binoculars({}, cwd, reference).fork(fail, console.log)

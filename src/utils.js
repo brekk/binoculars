@@ -49,7 +49,7 @@ const R = {
 }
 
 // binary enforcement of Object.assign
-const merge = R.curry((a, b) => assign(a, b))
+export const merge = R.curry((a, b) => assign(a, b))
 
 const alterPairs = R.curry(
   (fnValue, fnKey, list) => R.map(([k, v]) => ([
@@ -128,6 +128,13 @@ export const lookUpDependencies = R.curry(
     }),
     merge(defaultConfig(config)),
     getImportsAndExportsF
+  )(fileMatches)
+)
+
+export const lookUpAllDependencies = R.curry(
+  (config, fileMatches) => R.pipe(
+    R.map(lookUpDependencies(config)),
+    F.parallel(10)
   )(fileMatches)
 )
 

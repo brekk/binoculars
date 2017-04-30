@@ -3,6 +3,7 @@ import {pipe, toPairs, fromPairs, map} from 'ramda'
 import {
   flobby,
   lookUpDependencies,
+  // lookUpAllDependencies,
   relativeKeys,
   relativizeDataPaths,
   makeRelativeConditionally
@@ -85,8 +86,10 @@ test.cb(`lookUpDependencies`, (t) => {
           `fixLocalKeys`,
           `flobby`,
           `generateRelativePaths`,
+          `lookUpAllDependencies`,
           `lookUpDependencies`,
           `makeRelativeConditionally`,
+          `merge`,
           `relativeKeys`,
           `relativizeDataPaths`,
           `sliceNodeModules`,
