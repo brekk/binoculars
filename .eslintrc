@@ -79,5 +79,5 @@
     }]
   },
   "extends": ["standard"],
-  "plugins": ["babel", "fp", "import"]
+  "plugins": ["babel", "fp", "import", "ava"]
 }

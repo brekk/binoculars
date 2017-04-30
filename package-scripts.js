@@ -71,9 +71,9 @@ module.exports = {
           rm(BINARY_DIR),
           `nps build`,
           `echo "regular run ============================================="`,
-          `${EXECUTABLE} ./src/*.js`,
-          `echo "absolute run ============================================="`,
-          `${EXECUTABLE} ./src/*.js --absolute`
+          `${EXECUTABLE} ./src/*.js`
+          // `echo "absolute run ============================================="`,
+          // `${EXECUTABLE} ./src/*.js --absolute`
         )
       },
       description: `run the tool on itself`,

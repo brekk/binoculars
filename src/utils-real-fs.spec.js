@@ -73,8 +73,11 @@ test.cb(`lookUpDependencies`, (t) => {
       {
         'binoculars/src/utils-real-fs.spec.js': [],
         'binoculars/src/utils.js':
-        [ `collectKeys`,
+        [ `addModules`,
+          `alterLocalKey`,
+          `collectKeys`,
           `findModules`,
+          `fixLocalKeys`,
           `flobby`,
           `generateRelativePaths`,
           `lookUpDependencies`,
@@ -111,15 +114,17 @@ test(`relativizeDataPaths`, (t) => {
     exports:
     {
       'binoculars/absolute/paths/to/the/edge/of/the/world.js': `a`,
-      'binoculars/barrels/of/hilarity/whatever/whatever.js': `b`
+      'binoculars/barrels/of/hilarity/whatever/whatever.js': `b`,
+      'ploplop/index.js': [`default`]
     },
     files: [],
     imports:
     {
       'binoculars/absolute/paths/to/the/edge/of/the/world.js': `a`,
-      'binoculars/barrels/of/hilarity/whatever/whatever.js': `b`
+      'binoculars/barrels/of/hilarity/whatever/whatever.js': `b`,
+      'ploplop/index.js': [`default`]
     },
-    modules: []
+    modules: [`ploplop`]
   })
 })
 /* eslint-enable fp/no-unused-expression */

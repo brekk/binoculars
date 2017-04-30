@@ -48,6 +48,18 @@ const R = {
   uniq
 }
 
+// binary enforcement of Object.assign
+const merge = R.curry((a, b) => assign(a, b))
+
+const alterPairs = R.curry(
+  (fnValue, fnKey, list) => R.map(([k, v]) => ([
+    fnKey(k),
+    fnValue(v)
+  ]), list)
+)
+const alterPairKey = alterPairs(identity)
+// const alterPairValue = alterPairs(__placeholder__, identity)
+
 export const xtrace = R.curry(
   (l, a, z, y) => {
     l(a, z(y)) // eslint-disable-line
@@ -87,6 +99,20 @@ export const flobby = R.pipe(
   map(absolutify),
   F.fromPromise(globby)
 )
+const defaultConfig = (config) => {
+  const {
+    exclude = [],
+    parserOptions = {}
+  } = config
+  return assign({
+    exclude: [...builtIns, `*.scss`, `*.json`, ...exclude],
+    parser: `babel-eslint`,
+    parserOptions: assign({
+      experimentalObjectRestSpread: true,
+      jsx: true
+    }, parserOptions)
+  }, config)
+}
 
 /**
  * @name lookUpDependencies
@@ -97,21 +123,10 @@ export const flobby = R.pipe(
  */
 export const lookUpDependencies = R.curry(
   (config, fileMatches) => R.pipe(
-    (files) => {
-      const {
-        exclude = [],
-        parserOptions = {}
-      } = config
-      return assign({
-        exclude: [...builtIns, `*.scss`, `*.json`, ...exclude],
-        files,
-        parser: `babel-eslint`,
-        parserOptions: assign({
-          experimentalObjectRestSpread: true,
-          jsx: true
-        }, parserOptions)
-      }, config)
-    },
+    (files) => ({
+      files
+    }),
+    merge(defaultConfig(config)),
     getImportsAndExportsF
   )(fileMatches)
 )
@@ -202,9 +217,20 @@ export const findModules = R.pipe(
  */
 export const makeRelativeConditionally = R.curry(
   (condition, a, b) => (
-    condition ? truncateNodeModules(path.relative(a, b)) : b
+    condition ? path.relative(a, b) : b
   )
 )
+
+export const alterLocalKey = R.curry((condition, k) => (
+  testStringForModules(k) && condition ?
+  truncateNodeModules(k) :
+  k
+))
+
+export const fixLocalKeys = R.curry((condition, list) => alterPairKey(
+  alterLocalKey(condition),
+  list
+))
 
 /**
  * @name relativeKeys
@@ -216,12 +242,9 @@ export const makeRelativeConditionally = R.curry(
  */
 export const relativeKeys = R.curry((condition, rel, obj) => R.pipe(
   R.toPairs,
-  base__(`paired`, R.map(identity)),
-  R.map(([k, v]) => ([
-    makeRelativeConditionally(condition, rel, k),
-    v
-  ])),
-  base__(`relative`, R.map(identity)),
+  // let's find a way to collapse these two maps things into a single pipe, if we can
+  alterPairKey(makeRelativeConditionally(condition, rel)),
+  fixLocalKeys(condition),
   R.fromPairs
 )(obj))
 
@@ -251,10 +274,12 @@ export const generateRelativePaths = R.curry((isRelative, rel, data) => {
   }
 })
 
+export const addModules = (y) => R.assoc(`modules`, findModules(y), y)
+
 // final pipeline piece, add modules, remove stats and optionally make things relative
 export const relativizeDataPaths = R.curry(
   (isRelative, rel, data) => R.pipe(
-    (y) => R.assoc(`modules`, findModules(y), y),
+    addModules,
     stripStats,
     generateRelativePaths(isRelative, rel)
   )(data)
