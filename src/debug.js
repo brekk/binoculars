@@ -1,19 +1,14 @@
 import bug from 'debug'
-import curry from 'ramda/src/curry'
-import map from 'ramda/src/map'
-import pipe from 'ramda/src/pipe'
-
-const R = {
-  curry,
-  map,
-  pipe
-}
+import λcurry from 'ramda/src/curry'
+import λidentity from 'ramda/src/identity'
+import λmap from 'ramda/src/map'
+import λpipe from 'ramda/src/pipe'
 
 const __placeholder__ = {
   [`@@functional/placeholder`]: true
 }
 
-export const xtrace = R.curry(
+export const xtrace = λcurry(
   (l, a, z, y) => {
     l(a, z(y)) // eslint-disable-line
     return y
@@ -27,9 +22,9 @@ const debuggables = [
 ]
 
 /* eslint-disable no-unused-vars */
-const [b__, d__, m__] = R.pipe(
-  R.map(bug),
-  R.map(xtrace)
+const [b__, d__, m__] = λpipe(
+  λmap(bug),
+  λmap(xtrace)
 )(debuggables)
 /* eslint-enable no-unused-vars */
 
@@ -37,9 +32,9 @@ export const base__ = b__
 export const detail__ = d__
 export const minutiae__ = m__
 
-const [__b, __d, __m] = R.pipe(
-  R.map(bug),
-  R.map((s) => xtrace(s, __placeholder__, R.identity, __placeholder__))
+const [__b, __d, __m] = λpipe(
+  λmap(bug),
+  λmap((s) => xtrace(s, __placeholder__, λidentity, __placeholder__))
 )(debuggables)
 
 export const __base = __b

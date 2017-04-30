@@ -10,9 +10,9 @@ import {
   alterLocalKey,
   // sliceNodeModules,
   // stripStats,
-  testStringForModules,
-  xtrace
+  testStringForModules
 } from './utils'
+import {xtrace} from './debug'
 
 import {relative as fixture, absolutePathedObject} from './utils.fixture'
 

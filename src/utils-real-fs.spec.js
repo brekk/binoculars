@@ -43,8 +43,7 @@ test.cb(`lookUpDependencies`, (t) => {
   lookUpDependencies({}, files).fork(t.end, (results) => {
     // console.log(`results`, fixIt(results))
     t.deepEqual(fixIt(results), {
-      imports:
-      {
+      imports: {
         'binoculars/path': [ `default` ],
         'globby/index.js': [ `default` ],
         'to-absolute-glob/index.js': [ `default` ],
@@ -57,7 +56,6 @@ test.cb(`lookUpDependencies`, (t) => {
         'ramda/src/toPairs.js': [ `default` ],
         'ramda/src/fromPairs.js': [ `default` ],
         'ramda/src/pipe.js': [ `default` ],
-        'ramda/src/prop.js': [ `default` ],
         'ramda/src/uniq.js': [ `default` ],
         'ramda/src/head.js': [ `default` ],
         'ramda/src/identity.js': [ `default` ],
@@ -67,26 +65,35 @@ test.cb(`lookUpDependencies`, (t) => {
         'get-es-imports-exports/index.js': [ `default` ],
         'ava/index.js': [ `default` ],
         'ramda/index.js': [ `fromPairs`, `map`, `pipe`, `toPairs` ],
-        'binoculars/src/utils.js':
-        [ `flobby`,
+        'binoculars/src/debug.js': [
+          `__base`,
+          `__detail`
+        ],
+        'binoculars/src/utils.js': [
+          `flobby`,
           `lookUpDependencies`,
           `makeRelativeConditionally`,
           `relativeKeys`,
-          `relativizeDataPaths` ],
+          `relativizeDataPaths`
+        ],
         'binoculars/src/utils.fixture.js': [ `absolutePathedObject` ]
       },
       exports:
       {
-        'binoculars/src/utils-real-fs.spec.js': [],
-        'binoculars/src/utils.js':
-        [ `__base`,
+        "binoculars/src/debug.js": [
+          `__base`,
           `__detail`,
           `__minutiae`,
-          `addModules`,
-          `alterLocalKey`,
           `base__`,
-          `collectKeys`,
           `detail__`,
+          `minutiae__`,
+          `xtrace`
+        ],
+        'binoculars/src/utils-real-fs.spec.js': [],
+        'binoculars/src/utils.js':
+        [ `addModules`,
+          `alterLocalKey`,
+          `collectKeys`,
           `findModules`,
           `fixLocalKeys`,
           `flobby`,
@@ -94,18 +101,18 @@ test.cb(`lookUpDependencies`, (t) => {
           `lookUpDependencies`,
           `makeRelativeConditionally`,
           `merge`,
-          `minutiae__`,
           `relativeKeys`,
           `relativizeDataPaths`,
           `sliceNodeModules`,
           `stripStats`,
-          `testStringForModules`,
-          `xtrace` ],
+          `testStringForModules`
+        ],
         'binoculars/src/utils.fixture.js': [ `absolute`, `absolutePathedObject`, `relative` ]
       },
       loadedFiles:
       [ `binoculars/src/utils-real-fs.spec.js`,
         `binoculars/src/utils.js`,
+        `binoculars/src/debug.js`,
         `binoculars/src/utils.fixture.js` ],
       stats: []
     })

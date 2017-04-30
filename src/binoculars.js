@@ -1,9 +1,9 @@
 import F from 'fluture'
 import chalk from 'chalk'
-import assoc from 'ramda/src/assoc'
-import pipe from 'ramda/src/pipe'
-import map from 'ramda/src/map'
-import curry from 'ramda/src/curry'
+import λassoc from 'ramda/src/assoc'
+import λpipe from 'ramda/src/pipe'
+import λmap from 'ramda/src/map'
+import λcurry from 'ramda/src/curry'
 import {
   merge,
   relativizeDataPaths,
@@ -11,32 +11,25 @@ import {
   lookUpDependencies
 } from './utils'
 
-const R = {
-  assoc,
-  curry,
-  map,
-  pipe
-}
-
 const defaultConfig = merge({
   absolute: false,
   args: ``,
   multiple: false
 })
 
-const addDirectory = R.assoc(`directory`)
+const addDirectory = λassoc(`directory`)
 
-const prepend = R.curry((b, a) => b + a)
+const prepend = λcurry((b, a) => b + a)
 
-const bar = R.curry(
-  (color, pre, value) => R.pipe(
+const bar = λcurry(
+  (color, pre, value) => λpipe(
     prepend(pre),
     (x) => `\n=============== ${x} ================\n`,
     color
   )(value)
 )
 
-const echo = R.curry((log, fn, a, b) => {
+const echo = λcurry((log, fn, a, b) => {
   const bValue = b && b.value ? b.value : b
   const highlightedBar = bar(fn)
   const before = highlightedBar(`START `)
@@ -48,7 +41,7 @@ const hook = echo(console.log)
 const no = hook(chalk.red) // eslint-disable-line
 const yes = hook(chalk.green) // eslint-disable-line
 
-export const monocle = R.curry((config, workingDir, absolute, args) => {
+export const monocle = λcurry((config, workingDir, absolute, args) => {
   const addWorkingDirectory = addDirectory(workingDir)
   const relate = relativizeDataPaths(!absolute, workingDir)
   return F.of(args)
@@ -62,17 +55,17 @@ export const monocle = R.curry((config, workingDir, absolute, args) => {
     .bimap(no(`relative`), yes(`out!`))
 })
 
-export const binoculars = R.curry(
-  (config, workingDir, exe) => R.pipe(
+export const binoculars = λcurry(
+  (config, workingDir, exe) => λpipe(
     defaultConfig,
     ({
       absolute, multiple, args
     }) => {
       const box = (b) => ([b])
       const focus = monocle(config, workingDir, absolute)
-      const multifocus = R.pipe(
+      const multifocus = λpipe(
         // we need to box the inputs, b/c the raw files need to be arrays
-        R.map(R.pipe(box, focus)),
+        λmap(λpipe(box, focus)),
         F.parallel(Infinity)
       )
       return (

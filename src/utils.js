@@ -7,21 +7,21 @@ import builtIns from 'builtin-modules'
 import * as L from 'partial.lenses'
 import F from 'fluture'
 
-import curry from 'ramda/src/curry'
-import filter from 'ramda/src/filter'
-import toPairs from 'ramda/src/toPairs'
-import fromPairs from 'ramda/src/fromPairs'
-import pipe from 'ramda/src/pipe'
-import uniq from 'ramda/src/uniq'
-import head from 'ramda/src/head'
-import prop from 'ramda/src/prop'
-import assoc from 'ramda/src/assoc'
-import dissoc from 'ramda/src/dissoc'
-import identity from 'ramda/src/identity'
-import map from 'ramda/src/map'
+import λcurry from 'ramda/src/curry'
+import λfilter from 'ramda/src/filter'
+import λtoPairs from 'ramda/src/toPairs'
+import λfromPairs from 'ramda/src/fromPairs'
+import λpipe from 'ramda/src/pipe'
+import λuniq from 'ramda/src/uniq'
+import λhead from 'ramda/src/head'
+import λassoc from 'ramda/src/assoc'
+import λdissoc from 'ramda/src/dissoc'
+import λidentity from 'ramda/src/identity'
+import λmap from 'ramda/src/map'
 
 import getImportsAndExports from 'get-es-imports-exports'
-import bug from 'debug'
+
+import {__base, __detail} from './debug'
 
 const __placeholder__ = {
   [`@@functional/placeholder`]: true
@@ -33,65 +33,17 @@ const {
   keys
 } = Object
 
-const R = {
-  assoc,
-  curry,
-  dissoc,
-  filter,
-  fromPairs,
-  head,
-  identity,
-  map,
-  pipe,
-  prop,
-  toPairs,
-  uniq
-}
-
 // binary enforcement of Object.assign
-export const merge = R.curry((a, b) => assign(a, b))
+export const merge = λcurry((a, b) => assign(a, b))
 
-const alterPairs = R.curry(
-  (fnValue, fnKey, list) => R.map(([k, v]) => ([
+const alterPairs = λcurry(
+  (fnValue, fnKey, list) => λmap(([k, v]) => ([
     fnKey(k),
     fnValue(v)
   ]), list)
 )
-const alterPairKey = alterPairs(identity)
+const alterPairKey = alterPairs(λidentity)
 // const alterPairValue = alterPairs(__placeholder__, identity)
-
-export const xtrace = R.curry(
-  (l, a, z, y) => {
-    l(a, z(y)) // eslint-disable-line
-    return y
-  }
-)
-
-const debuggables = [
-  `binoculars:0`,
-  `binoculars:1`,
-  `binoculars:2`
-]
-
-/* eslint-disable no-unused-vars */
-const [b__, d__, m__] = R.pipe(
-  R.map(bug),
-  R.map(xtrace)
-)(debuggables)
-/* eslint-enable no-unused-vars */
-
-export const base__ = b__
-export const detail__ = d__
-export const minutiae__ = m__
-
-const [__b, __d, __m] = R.pipe(
-  R.map(bug),
-  R.map((s) => xtrace(s, __placeholder__, R.identity, __placeholder__))
-)(debuggables)
-
-export const __base = __b
-export const __detail = __d
-export const __minutiae = __m
 
 // screw promises, Futures are the future
 const getImportsAndExportsF = F.fromPromise(getImportsAndExports)
@@ -103,8 +55,8 @@ const getImportsAndExportsF = F.fromPromise(getImportsAndExports)
  * @returns {Future} Future(Array) - a future wrapped list of file paths
  * @signature flobby :: Array(String) -> Future(Array(String))
  */
-export const flobby = R.pipe(
-  map(absolutify),
+export const flobby = λpipe(
+  λmap(absolutify),
   F.fromPromise(globby)
 )
 const defaultConfig = (config) => {
@@ -129,8 +81,8 @@ const defaultConfig = (config) => {
  * @returns {Future} Future(Object) - a future list of import / exports
  * @signature lookUpDependencies :: Object -> Array(string) -> Future(Object)
  */
-export const lookUpDependencies = R.curry(
-  (config, fileMatches) => R.pipe(
+export const lookUpDependencies = λcurry(
+  (config, fileMatches) => λpipe(
     (files) => ({
       files
     }),
@@ -148,14 +100,14 @@ export const lookUpDependencies = R.curry(
  * @returns {object} object
  * @signature collectKeys :: String -> Object -> Object
  */
-export const collectKeys = R.curry(
-  (pathing, data) => R.pipe(
+export const collectKeys = λcurry(
+  (pathing, data) => λpipe(
     L.collect([pathing, keys]),
-    R.head
+    λhead
   )(data)
 )
 
-const indexOf = R.curry((thing, src) => src.indexOf(thing))
+const indexOf = λcurry((thing, src) => src.indexOf(thing))
 const indexOfNodeModules = indexOf(NODE_MODULES)
 
 const truncateNodeModules = (m) => {
@@ -186,9 +138,9 @@ const removeNodeModules = (m) => {
  * @returns {array} modifiedArray
  * @signature sliceNodeModules :: Array(String) -> Array(String)
  */
-export const sliceNodeModules = R.map(removeNodeModules)
+export const sliceNodeModules = λmap(removeNodeModules)
 
-export const stripStats = R.dissoc(`stats`)
+export const stripStats = λdissoc(`stats`)
 
 /**
  * @name testStringForModules
@@ -196,7 +148,7 @@ export const stripStats = R.dissoc(`stats`)
  * @returns {array} filteredArray
  * @signature testStringForModules :: Array(String) -> Array(String)
  */
-export const testStringForModules = R.filter(
+export const testStringForModules = λfilter(
   (s) => (
     typeof s === `string` && (
       s.indexOf(`node_modules`) > -1 || builtIns.includes(s)
@@ -210,11 +162,11 @@ export const testStringForModules = R.filter(
  * @returns {array} modules - a list of modules
  * @signature findModules :: Object -> Array(String)
  */
-export const findModules = R.pipe(
+export const findModules = λpipe(
   collectKeys(`imports`),
   testStringForModules,
   sliceNodeModules,
-  R.uniq
+  λuniq
 )
 
 /**
@@ -225,19 +177,19 @@ export const findModules = R.pipe(
  * @returns {string} identity or relative path
  * @signature makeRelativeConditionally :: Boolean -> String -> String -> String
  */
-export const makeRelativeConditionally = R.curry(
+export const makeRelativeConditionally = λcurry(
   (condition, a, b) => (
     condition ? path.relative(a, b) : b
   )
 )
 
-export const alterLocalKey = R.curry((condition, k) => (
+export const alterLocalKey = λcurry((condition, k) => (
   testStringForModules(k) && condition ?
   truncateNodeModules(k) :
   k
 ))
 
-export const fixLocalKeys = R.curry((condition, list) => alterPairKey(
+export const fixLocalKeys = λcurry((condition, list) => alterPairKey(
   alterLocalKey(condition),
   list
 ))
@@ -250,12 +202,12 @@ export const fixLocalKeys = R.curry((condition, list) => alterPairKey(
  * @returns {object} altered - an object whose keys may have been altered
  * @signature relativeKeys :: Boolean -> String -> Object -> Object
  */
-export const relativeKeys = R.curry((condition, rel, obj) => R.pipe(
-  R.toPairs,
+export const relativeKeys = λcurry((condition, rel, obj) => λpipe(
+  λtoPairs,
   // let's find a way to collapse these two maps things into a single pipe, if we can
   alterPairKey(makeRelativeConditionally(condition, rel)),
   fixLocalKeys(condition),
-  R.fromPairs
+  λfromPairs
 )(obj))
 
 /**
@@ -265,7 +217,7 @@ export const relativeKeys = R.curry((condition, rel, obj) => R.pipe(
  * @param {object} data - the main file structure we're understanding
  * @signature generateRelativePaths :: Boolean -> String -> Object -> Object
  */
-export const generateRelativePaths = R.curry((isRelative, rel, data) => {
+export const generateRelativePaths = λcurry((isRelative, rel, data) => {
   const {
     directory,
     exports: e,
@@ -273,8 +225,8 @@ export const generateRelativePaths = R.curry((isRelative, rel, data) => {
     modules,
     loadedFiles = []
   } = data
-  const [imports, exports] = R.map(relativeKeys(isRelative, rel), [i, e])
-  const files = R.map(makeRelativeConditionally(isRelative, rel), loadedFiles)
+  const [imports, exports] = λmap(relativeKeys(isRelative, rel), [i, e])
+  const files = λmap(makeRelativeConditionally(isRelative, rel), loadedFiles)
   return {
     directory,
     exports,
@@ -284,11 +236,11 @@ export const generateRelativePaths = R.curry((isRelative, rel, data) => {
   }
 })
 
-export const addModules = (y) => R.assoc(`modules`, findModules(y), y)
+export const addModules = (y) => λassoc(`modules`, findModules(y), y)
 
 // final pipeline piece, add modules, remove stats and optionally make things relative
-export const relativizeDataPaths = R.curry(
-  (isRelative, rel, data) => R.pipe(
+export const relativizeDataPaths = λcurry(
+  (isRelative, rel, data) => λpipe(
     addModules,
     stripStats,
     generateRelativePaths(isRelative, rel)
