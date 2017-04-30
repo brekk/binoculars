@@ -29,6 +29,7 @@ const __placeholder__ = {
 const NODE_MODULES = `node_modules/`
 
 const {
+  assign,
   keys
 } = Object
 
@@ -96,15 +97,21 @@ export const flobby = R.pipe(
  */
 export const lookUpDependencies = R.curry(
   (config, fileMatches) => R.pipe(
-    (files) => Object.assign({
-      exclude: [...builtIns, `*.scss`, `*.json`],
-      files,
-      parser: `babel-eslint`,
-      parserOptions: {
-        experimentalObjectRestSpread: true,
-        jsx: true
-      }
-    }, config),
+    (files) => {
+      const {
+        exclude = [],
+        parserOptions = {}
+      } = config
+      return assign({
+        exclude: [...builtIns, `*.scss`, `*.json`, ...exclude],
+        files,
+        parser: `babel-eslint`,
+        parserOptions: assign({
+          experimentalObjectRestSpread: true,
+          jsx: true
+        }, parserOptions)
+      }, config)
+    },
     getImportsAndExportsF
   )(fileMatches)
 )
@@ -123,18 +130,21 @@ export const collectKeys = R.curry(
   )(data)
 )
 
-const truncateNodeModules = (m) => {
-  const match = m.indexOf(NODE_MODULES)
-  if (match > -1) {
-    return m.slice(
-      match + NODE_MODULES.length
-    )
-  }
-  return m
-}
+const indexOf = R.curry((thing, src) => src.indexOf(thing))
+const indexOfNodeModules = indexOf(NODE_MODULES)
 
+const truncateNodeModules = (m) => {
+  const match = indexOfNodeModules(m)
+  return (
+    match > -1 ?
+    m.slice(
+      match + NODE_MODULES.length
+    ) :
+    m
+  )
+}
 const removeNodeModules = (m) => {
-  const match = m.indexOf(NODE_MODULES)
+  const match = indexOfNodeModules(m)
   if (match > -1) {
     const l = m.slice(
       match + NODE_MODULES.length
