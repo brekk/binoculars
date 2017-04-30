@@ -13,3 +13,7 @@ dependencies:
 test:
   override:
     - yarn test
+  post:
+    # Copy over the coverage directory so we can view the HTML report in CI
+    # - mkdir -p $CIRCLE_ARTIFACTS/coverage
+    - mv coverage $CIRCLE_ARTIFACTS/.
