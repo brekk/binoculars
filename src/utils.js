@@ -83,31 +83,30 @@ const getImportsAndExportsF = F.fromPromise(getImportsAndExports)
  * @signature flobby :: Array(String) -> Future(Array(String))
  */
 export const flobby = R.pipe(
-  __base(`inputs`),
   map(absolutify),
-  __detail(`absolute paths`),
   F.fromPromise(globby)
 )
 
 /**
  * @name lookUpDependencies
+ * @param {object} config - a configuration object
  * @param {array} files - a list of files
  * @returns {Future} Future(Object) - a future list of import / exports
- * @signature lookUpDependencies :: Array(string) -> Future(Object)
+ * @signature lookUpDependencies :: Object -> Array(string) -> Future(Object)
  */
-export const lookUpDependencies = R.pipe(
-  __detail(`files`),
-  (files) => ({
-    exclude: [...builtIns, `*.scss`, `*.json`],
-    files,
-    parser: `babel-eslint`,
-    parserOptions: {
-      experimentalObjectRestSpread: true,
-      jsx: true
-    }
-  }),
-  detail__(`excluded`, R.prop(`exclude`)),
-  getImportsAndExportsF
+export const lookUpDependencies = R.curry(
+  (config, fileMatches) => R.pipe(
+    (files) => Object.assign({
+      exclude: [...builtIns, `*.scss`, `*.json`],
+      files,
+      parser: `babel-eslint`,
+      parserOptions: {
+        experimentalObjectRestSpread: true,
+        jsx: true
+      }
+    }, config),
+    getImportsAndExportsF
+  )(fileMatches)
 )
 
 /**
@@ -119,12 +118,32 @@ export const lookUpDependencies = R.pipe(
  */
 export const collectKeys = R.curry(
   (pathing, data) => R.pipe(
-    __base(`collectKeys`),
     L.collect([pathing, keys]),
-    __detail(`collected`),
     R.head
   )(data)
 )
+
+const truncateNodeModules = (m) => {
+  const match = m.indexOf(NODE_MODULES)
+  if (match > -1) {
+    return m.slice(
+      match + NODE_MODULES.length
+    )
+  }
+  return m
+}
+
+const removeNodeModules = (m) => {
+  const match = m.indexOf(NODE_MODULES)
+  if (match > -1) {
+    const l = m.slice(
+      match + NODE_MODULES.length
+    )
+    const out = l.slice(0, l.indexOf(`/`))
+    return out
+  }
+  return m
+}
 
 /**
  * @name sliceNodeModules
@@ -132,21 +151,7 @@ export const collectKeys = R.curry(
  * @returns {array} modifiedArray
  * @signature sliceNodeModules :: Array(String) -> Array(String)
  */
-export const sliceNodeModules = R.map(
-  (m) => {
-    const match = m.indexOf(NODE_MODULES)
-    if (match > -1) {
-      const l = m.slice(
-        match + NODE_MODULES.length
-      )
-      return __minutiae(
-        `found node_modules`,
-        l.slice(0, l.indexOf(`/`))
-      )
-    }
-    return m
-  }
-)
+export const sliceNodeModules = R.map(removeNodeModules)
 
 export const stripStats = R.dissoc(`stats`)
 
@@ -171,13 +176,10 @@ export const testStringForModules = R.filter(
  * @signature findModules :: Object -> Array(String)
  */
 export const findModules = R.pipe(
-  __base(`findModules`),
   collectKeys(`imports`),
-  __detail(`collected`),
   testStringForModules,
   sliceNodeModules,
-  R.uniq,
-  __minutiae(`modules`)
+  R.uniq
 )
 
 /**
@@ -190,7 +192,7 @@ export const findModules = R.pipe(
  */
 export const makeRelativeConditionally = R.curry(
   (condition, a, b) => (
-    condition ? path.relative(a, b) : b
+    condition ? truncateNodeModules(path.relative(a, b)) : b
   )
 )
 
@@ -204,11 +206,12 @@ export const makeRelativeConditionally = R.curry(
  */
 export const relativeKeys = R.curry((condition, rel, obj) => R.pipe(
   R.toPairs,
+  base__(`paired`, R.map(identity)),
   R.map(([k, v]) => ([
     makeRelativeConditionally(condition, rel, k),
     v
   ])),
-  detail__(`adjusted`, R.map(([k]) => k)),
+  base__(`relative`, R.map(identity)),
   R.fromPairs
 )(obj))
 

@@ -35,33 +35,33 @@ test.cb(`lookUpDependencies`, (t) => {
   t.is(typeof lookUpDependencies, `function`)
   // console.log(`input`, file)
   const files = [__filename]
-  lookUpDependencies(files).fork(t.end, (results) => {
+  lookUpDependencies({}, files).fork(t.end, (results) => {
     // console.log(`results`, fixIt(results))
     t.deepEqual(fixIt(results), {
       imports:
       {
         'binoculars/path': [ `default` ],
-        'binoculars/node_modules/globby/index.js': [ `default` ],
-        'binoculars/node_modules/to-absolute-glob/index.js': [ `default` ],
-        'binoculars/node_modules/builtin-modules/index.js': [ `default` ],
-        'binoculars/node_modules/partial.lenses/dist/partial.lenses.cjs.js': [ `*` ],
-        'binoculars/node_modules/debug/src/index.js': [ `default` ],
-        'binoculars/node_modules/fluture/fluture.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/curry.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/filter.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/toPairs.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/fromPairs.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/pipe.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/prop.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/uniq.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/head.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/identity.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/assoc.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/dissoc.js': [ `default` ],
-        'binoculars/node_modules/ramda/src/map.js': [ `default` ],
-        'binoculars/node_modules/get-es-imports-exports/index.js': [ `default` ],
-        'binoculars/node_modules/ava/index.js': [ `default` ],
-        'binoculars/node_modules/ramda/index.js': [ `fromPairs`, `map`, `pipe`, `toPairs` ],
+        'globby/index.js': [ `default` ],
+        'to-absolute-glob/index.js': [ `default` ],
+        'builtin-modules/index.js': [ `default` ],
+        'partial.lenses/dist/partial.lenses.cjs.js': [ `*` ],
+        'debug/src/index.js': [ `default` ],
+        'fluture/fluture.js': [ `default` ],
+        'ramda/src/curry.js': [ `default` ],
+        'ramda/src/filter.js': [ `default` ],
+        'ramda/src/toPairs.js': [ `default` ],
+        'ramda/src/fromPairs.js': [ `default` ],
+        'ramda/src/pipe.js': [ `default` ],
+        'ramda/src/prop.js': [ `default` ],
+        'ramda/src/uniq.js': [ `default` ],
+        'ramda/src/head.js': [ `default` ],
+        'ramda/src/identity.js': [ `default` ],
+        'ramda/src/assoc.js': [ `default` ],
+        'ramda/src/dissoc.js': [ `default` ],
+        'ramda/src/map.js': [ `default` ],
+        'get-es-imports-exports/index.js': [ `default` ],
+        'ava/index.js': [ `default` ],
+        'ramda/index.js': [ `fromPairs`, `map`, `pipe`, `toPairs` ],
         'binoculars/src/utils.js':
         [ `lookUpDependencies`,
           `makeRelativeConditionally`,

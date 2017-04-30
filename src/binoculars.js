@@ -19,9 +19,10 @@ export const binoculars = R.curry((workingDir, exe) => {
     absolute = false,
     args = ``
   } = exe
+  const config = {}
   return F.of(args)
     .chain(flobby)
-    .chain(lookUpDependencies)
+    .chain(lookUpDependencies(config))
     .map(R.assoc(`directory`, workingDir))
     .map(relativizeDataPaths(!absolute, workingDir))
 })

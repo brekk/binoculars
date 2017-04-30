@@ -135,68 +135,68 @@ test(`generateRelativePaths`, (t) => {
       `utils.spec.js`
     ],
     imports: {
-      "../../node_modules/process/index.js": [
-        `default`
-      ],
-      "../node_modules/ava/index.js": [
-        `default`
-      ],
-      "../node_modules/builtin-modules/index.js": [
-        `default`
-      ],
-      "../node_modules/commander/index.js": [
-        `default`
-      ],
-      "../node_modules/fluture/fluture.js": [
-        `default`
-      ],
-      "../node_modules/get-es-imports-exports/index.js": [
-        `default`
-      ],
-      "../node_modules/globby/index.js": [
-        `default`
-      ],
-      "../node_modules/partial.lenses/dist/partial.lenses.cjs.js": [
-        `*`
-      ],
-      "../node_modules/ramda/src/assoc.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/curry.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/dissoc.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/filter.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/fromPairs.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/head.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/map.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/pipe.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/toPairs.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/uniq.js": [
-        `default`
-      ],
-      "../node_modules/to-absolute-glob/index.js": [
-        `default`
-      ],
       "../path": [
+        `default`
+      ],
+      "ava/index.js": [
         `default`
       ],
       "binoculars.js": [
         `binoculars`
+      ],
+      "builtin-modules/index.js": [
+        `default`
+      ],
+      "commander/index.js": [
+        `default`
+      ],
+      "fluture/fluture.js": [
+        `default`
+      ],
+      "get-es-imports-exports/index.js": [
+        `default`
+      ],
+      "globby/index.js": [
+        `default`
+      ],
+      "partial.lenses/dist/partial.lenses.cjs.js": [
+        `*`
+      ],
+      "process/index.js": [
+        `default`
+      ],
+      "ramda/src/assoc.js": [
+        `default`
+      ],
+      "ramda/src/curry.js": [
+        `default`
+      ],
+      "ramda/src/dissoc.js": [
+        `default`
+      ],
+      "ramda/src/filter.js": [
+        `default`
+      ],
+      "ramda/src/fromPairs.js": [
+        `default`
+      ],
+      "ramda/src/head.js": [
+        `default`
+      ],
+      "ramda/src/map.js": [
+        `default`
+      ],
+      "ramda/src/pipe.js": [
+        `default`
+      ],
+      "ramda/src/toPairs.js": [
+        `default`
+      ],
+      "ramda/src/uniq.js": [
+        `default`
+      ],
+      "to-absolute-glob/index.js": [
+        `default`
       ],
       "utils.js": [
         `collectKeys`,

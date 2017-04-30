@@ -70,8 +70,10 @@ module.exports = {
         script: series(
           rm(BINARY_DIR),
           `nps build`,
-          `${EXECUTABLE} ./tests/**/*`,
-          `DEBUG=binoculars:* ${EXECUTABLE} ./src/*.js`
+          `echo "regular run ============================================="`,
+          `${EXECUTABLE} ./src/*.js`,
+          `echo "absolute run ============================================="`,
+          `${EXECUTABLE} ./src/*.js --absolute`
         )
       },
       description: `run the tool on itself`,
