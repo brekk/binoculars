@@ -70,12 +70,39 @@ module.exports = {
         script: series(
           rm(BINARY_DIR),
           `nps build`,
-          `${EXECUTABLE} ./tests/**/*`,
-          `${EXECUTABLE} ./src/*.js`
+          `nps meta.single`,
+          `sleep 5`,
+          `nps meta.multi`
         )
       },
+      debug: {
+        description: `run the meta calls with DEBUG=binoculars:*`,
+        multi: {
+          description: `run the meta.multi call with DEBUG=binoculars:*`,
+          script: `DEBUG=binoculars:* nps meta.multi`
+        },
+        script: `DEBUG=binoculars:* nps meta.auto`,
+        single: {
+          description: `run the meta.single call with DEBUG=binoculars:*`,
+          script: `DEBUG=binoculars:* nps meta.single`
+        }
+      },
       description: `run the tool on itself`,
-      script: `nps meta.auto`
+      multi: {
+        description: `run a multi meta call`,
+        script: series(
+          `echo "multiple run ============================================="`,
+          `${EXECUTABLE} --multiple ./src/*.js`
+        )
+      },
+      script: `nps meta.auto`,
+      single: {
+        description: `run a single meta call`,
+        script: series(
+          `echo "regular run ============================================="`,
+          `${EXECUTABLE} ./src/*.js`
+        )
+      }
     },
     mkdir: {
       coverage: `mkdirp coverage`,
@@ -92,9 +119,16 @@ module.exports = {
     test: {
       covered: {
         description: `run covered tests`,
-        script: `cross-env NODE_ENV=test nyc ava --verbose src/*.spec.js`
+        script: `cross-env NODE_ENV=test nyc ava src/*.spec.js`
       },
       description: `run lint and tests`,
+      integration: {
+        description: `run integration tests`,
+        script: series(
+          `nps dist`,
+          `ava --verbose tests/integration.js`
+        )
+      },
       log: {
         description: `run tests and save logfile`,
         script: `npm run test:covered > test-output.log`

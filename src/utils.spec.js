@@ -1,24 +1,20 @@
 import test from 'ava'
 import map from 'ramda/src/map'
 import {
+  addModules,
   collectKeys,
   findModules,
-  flobby,
   generateRelativePaths,
   makeRelativeConditionally,
   relativeKeys,
+  alterLocalKey,
   // sliceNodeModules,
   // stripStats,
-  testStringForModules,
-  xtrace
+  testStringForModules
 } from './utils'
+import {xtrace} from './debug'
 
 import {relative as fixture, absolutePathedObject} from './utils.fixture'
-
-// so absolute paths are useful, but we will never be able to test cross computer
-const truncate = map((x) => {
-  return x.split(`/`).slice(-2).join(`/`)
-})
 
 /* eslint-disable fp/no-unused-expression */
 
@@ -79,26 +75,7 @@ test(`testStringForModules`, (t) => {
     `fs`
   ])
 })
-test.cb(`flobby`, (t) => {
-  t.plan(2)
-  t.is(typeof flobby, `function`)
-  const inputs = [`./src/*.js`, `./test/**/*.js`]
-  const expected = truncate([
-    `src/binoculars.js`,
-    `src/cli.js`,
-    `src/utils-real-fs.spec.js`,
-    `src/utils.fixture.js`,
-    `src/utils.js`,
-    `src/utils.spec.js`
-  ])
-  flobby(inputs).fork(
-    t.end,
-    (output) => {
-      t.deepEqual(truncate(output), expected)
-      t.end()
-    }
-  )
-})
+
 test(`generateRelativePaths`, (t) => {
   t.plan(2)
   t.is(typeof generateRelativePaths, `function`)
@@ -135,68 +112,68 @@ test(`generateRelativePaths`, (t) => {
       `utils.spec.js`
     ],
     imports: {
-      "../../node_modules/process/index.js": [
-        `default`
-      ],
-      "../node_modules/ava/index.js": [
-        `default`
-      ],
-      "../node_modules/builtin-modules/index.js": [
-        `default`
-      ],
-      "../node_modules/commander/index.js": [
-        `default`
-      ],
-      "../node_modules/fluture/fluture.js": [
-        `default`
-      ],
-      "../node_modules/get-es-imports-exports/index.js": [
-        `default`
-      ],
-      "../node_modules/globby/index.js": [
-        `default`
-      ],
-      "../node_modules/partial.lenses/dist/partial.lenses.cjs.js": [
-        `*`
-      ],
-      "../node_modules/ramda/src/assoc.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/curry.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/dissoc.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/filter.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/fromPairs.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/head.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/map.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/pipe.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/toPairs.js": [
-        `default`
-      ],
-      "../node_modules/ramda/src/uniq.js": [
-        `default`
-      ],
-      "../node_modules/to-absolute-glob/index.js": [
-        `default`
-      ],
       "../path": [
+        `default`
+      ],
+      "ava/index.js": [
         `default`
       ],
       "binoculars.js": [
         `binoculars`
+      ],
+      "builtin-modules/index.js": [
+        `default`
+      ],
+      "commander/index.js": [
+        `default`
+      ],
+      "fluture/fluture.js": [
+        `default`
+      ],
+      "get-es-imports-exports/index.js": [
+        `default`
+      ],
+      "globby/index.js": [
+        `default`
+      ],
+      "partial.lenses/dist/partial.lenses.cjs.js": [
+        `*`
+      ],
+      "process/index.js": [
+        `default`
+      ],
+      "ramda/src/assoc.js": [
+        `default`
+      ],
+      "ramda/src/curry.js": [
+        `default`
+      ],
+      "ramda/src/dissoc.js": [
+        `default`
+      ],
+      "ramda/src/filter.js": [
+        `default`
+      ],
+      "ramda/src/fromPairs.js": [
+        `default`
+      ],
+      "ramda/src/head.js": [
+        `default`
+      ],
+      "ramda/src/map.js": [
+        `default`
+      ],
+      "ramda/src/pipe.js": [
+        `default`
+      ],
+      "ramda/src/toPairs.js": [
+        `default`
+      ],
+      "ramda/src/uniq.js": [
+        `default`
+      ],
+      "to-absolute-glob/index.js": [
+        `default`
       ],
       "utils.js": [
         `collectKeys`,
@@ -240,7 +217,8 @@ test(`relativeKeys`, (t) => {
   const out = relativeKeys(true, `coolpants/dot/com`, absolutePathedObject)
   const expected = {
     [`../../../absolute/paths/to/the/edge/of/the/world.js`]: `a`,
-    [`../../../barrels/of/hilarity/whatever/whatever.js`]: `b`
+    [`../../../barrels/of/hilarity/whatever/whatever.js`]: `b`,
+    [`ploplop/index.js`]: [`default`]
   }
   t.deepEqual(out, expected)
 })
@@ -249,4 +227,104 @@ test(`xtrace`, (t) => {
   t.is(typeof xtrace, `function`)
   const two = xtrace((x) => x, `1`, (x) => x, `2`)
   t.is(two, `2`)
+})
+test(`alterLocalKey`, (t) => {
+  t.plan(2)
+  const input = [
+    `a`,
+    `whatever/a/b/c/index.js`,
+    `path/node_modules/cool/funtimes/index.js`,
+    `./shit/cool/node_modules/butts/index.js`
+  ]
+  const falseOutputs = map(alterLocalKey(false), input)
+  const trueOutputs = map(alterLocalKey(true), input)
+  t.deepEqual(trueOutputs, [
+    `a`,
+    `whatever/a/b/c/index.js`,
+    `cool/funtimes/index.js`,
+    `butts/index.js`
+  ])
+  t.deepEqual(falseOutputs, input)
+})
+test(`addModules`, (t) => {
+  t.plan(2)
+  t.is(typeof addModules, `function`)
+  const output = addModules(fixture)
+  /* eslint-disable sort-keys */
+  const expected = {
+    directory: `binoculars`,
+    exports:
+    {
+      'src/binoculars.js': [ `binoculars` ],
+      'src/utils.js':
+      [ `collectKeys`,
+        `findModules`,
+        `flobby`,
+        `generateRelativePaths`,
+        `lookUpDependencies`,
+        `makeRelativeConditionally`,
+        `peek`,
+        `relativeKeys`,
+        `relativizeDataPaths`,
+        `sliceNodeModules`,
+        `stripStats`,
+        `testStringForModules`,
+        `trace`,
+        `xtrace` ],
+      'src/cli.js': [],
+      'src/utils.spec.js': []
+    },
+    loadedFiles:
+    [ `src/binoculars.js`,
+      `src/utils.js`,
+      `src/cli.js`,
+      `src/utils.spec.js` ],
+    imports:
+    {
+      'node_modules/ava/index.js': [ `default` ],
+      'node_modules/ramda/src/map.js': [ `default` ],
+      'src/utils.js':
+      [ `collectKeys`,
+        `findModules`,
+        `flobby`,
+        `generateRelativePaths`,
+        `lookUpDependencies`,
+        `makeRelativeConditionally`,
+        `relativizeDataPaths`,
+        `testStringForModules` ],
+      '../node_modules/process/index.js': [ `default` ],
+      'node_modules/commander/index.js': [ `default` ],
+      'src/binoculars.js': [ `binoculars` ],
+      path: [ `default` ],
+      'node_modules/globby/index.js': [ `default` ],
+      'node_modules/to-absolute-glob/index.js': [ `default` ],
+      'node_modules/builtin-modules/index.js': [ `default` ],
+      'node_modules/partial.lenses/dist/partial.lenses.cjs.js': [ `*` ],
+      'node_modules/fluture/fluture.js': [ `default` ],
+      'node_modules/ramda/src/curry.js': [ `default` ],
+      'node_modules/ramda/src/filter.js': [ `default` ],
+      'node_modules/ramda/src/toPairs.js': [ `default` ],
+      'node_modules/ramda/src/fromPairs.js': [ `default` ],
+      'node_modules/ramda/src/pipe.js': [ `default` ],
+      'node_modules/ramda/src/uniq.js': [ `default` ],
+      'node_modules/ramda/src/head.js': [ `default` ],
+      'node_modules/ramda/src/assoc.js': [ `default` ],
+      'node_modules/ramda/src/dissoc.js': [ `default` ],
+      'node_modules/get-es-imports-exports/index.js': [ `default` ]
+    },
+    modules:
+    [ `ava`,
+      `ramda`,
+      `process`,
+      `commander`,
+      `path`,
+      `globby`,
+      `to-absolute-glob`,
+      `builtin-modules`,
+      `partial.lenses`,
+      `fluture`,
+      `get-es-imports-exports` ]
+  }
+  /* eslint-enable sort-keys */
+  t.deepEqual(output, expected)
 })

@@ -127,7 +127,8 @@ export const absolute = {
 
 export const absolutePathedObject = {
   [`absolute/paths/to/the/edge/of/the/world.js`]: `a`,
-  [`barrels/of/hilarity/whatever/whatever.js`]: `b`
+  [`barrels/of/hilarity/whatever/whatever.js`]: `b`,
+  [`node_modules/ploplop/index.js`]: [`default`]
 }
 
 /* eslint-enable sort-keys */
