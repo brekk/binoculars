@@ -3,7 +3,8 @@ import {
 } from 'path'
 import {chdir} from 'process'
 
-import λcurry from 'ramda/src/curry'
+import curry from 'ramda/src/curry'
+import dissoc from 'ramda/src/dissoc'
 
 import test from 'ava'
 
@@ -12,7 +13,7 @@ import {
   // monocle
 } from './binoculars'
 
-const resolve = λcurry((a, b) => r(b, a))
+const resolve = curry((a, b) => r(b, a))
 
 const here = __dirname
 
@@ -38,7 +39,6 @@ test.cb(`running the tool against its source results in a combined blob of info`
     multiple: false
   }
   const expected = {
-    directory: `/Users/bbockrath/Documents/servers/work/binoculars`,
     exports:
     {
       'src/binoculars.js': [ `binoculars`, `monocle` ],
@@ -140,7 +140,7 @@ test.cb(`running the tool against its source results in a combined blob of info`
       `chalk` ]
   }
   binoculars(config, dir, exe).fork(t.fail, (blob) => {
-    t.deepEqual(blob, expected)
+    t.deepEqual(dissoc(`directory`, blob), expected)
     t.end()
   })
 })
