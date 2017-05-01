@@ -5,50 +5,56 @@
   "main": "index.js",
   "author": "brekk bockrath",
   "license": "ISC",
-  "ava": {
-    "require": [
-      "babel-register"
-    ],
-    "files": [
-      "src/*.spec.js"
-    ],
-    "source": [
-      "src/*.js",
-      "!src/*.spec.js"
-    ],
-    "concurrency": 10,
-    "babel": "inherit"
-  },
   "bin": {
     "binoculars": "./bin/cli.js"
   },
   "nyc": {
-    "statements": 100,
-    "branches": 100,
-    "functions": 100,
     "lines": 100,
+    "functions": 100,
+    "branches": 100,
+    "statements": 100,
     "reporter": [
       "lcov",
-      "json",
-      "html",
       "text",
       "text-summary"
     ],
     "exclude": [
       "node_modules",
-      "tests",
+      "package-scripts.js",
+      "*.spec.js",
+      "index.js",
       "config",
-      "coverage"
+      "coverage",
+      "lib",
+      "bin",
+      "dist",
+      "wallaby.js"
     ],
     "include": [
-      "src/*.js",
-      "!src/*.spec.js",
-      "!src/*.fixture.js"
+      "src/*.js"
     ],
     "all": true,
-    "check-coverage": true,
-    "sourceMap": false,
-    "instrument": false
+    "instrument": false,
+    "sourceMap": false
+  },
+  "ava": {
+    "require": [
+      "babel-register"
+    ],
+    "files": [
+      "src/*.spec.js",
+      "src/*.fixture.*",
+      "src/**/*.spec.js",
+      "src/**/*.fixture.*"
+    ],
+    "source": [
+      "src/*.js",
+      "!src/*.spec.js",
+      "src/**/*.js",
+      "!src/**/*.spec.js"
+    ],
+    "concurrency": 10,
+    "babel": "inherit"
   },
   "devDependencies": {
     "ava": "^0.19.1",

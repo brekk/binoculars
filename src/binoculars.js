@@ -10,6 +10,9 @@ import {
   flobby,
   lookUpDependencies
 } from './utils'
+import {
+  __base
+} from './debug'
 
 const defaultConfig = merge({
   absolute: false,
@@ -37,7 +40,7 @@ const echo = λcurry((log, fn, a, b) => {
   log(before(a), bValue, end(a)) // eslint-disable-line
   return b
 })
-const hook = echo(console.log)
+const hook = echo(__base)
 const no = hook(chalk.red) // eslint-disable-line
 const yes = hook(chalk.green) // eslint-disable-line
 
@@ -58,13 +61,14 @@ export const monocle = λcurry((config, workingDir, absolute, args) => {
 export const binoculars = λcurry(
   (config, workingDir, exe) => λpipe(
     defaultConfig,
-    ({
-      absolute, multiple, args
-    }) => {
-      const box = (b) => ([b])
+    (raw) => {
+      const {
+        absolute, multiple, args
+      } = raw
       const focus = monocle(config, workingDir, absolute)
+      // we need to box the inputs, b/c the raw files need to be arrays when in multiple mode
+      const box = (b) => ([b])
       const multifocus = λpipe(
-        // we need to box the inputs, b/c the raw files need to be arrays
         λmap(λpipe(box, focus)),
         F.parallel(Infinity)
       )

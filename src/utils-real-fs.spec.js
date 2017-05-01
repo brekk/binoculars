@@ -154,6 +154,7 @@ test.cb(`flobby`, (t) => {
   const inputs = [`./src/*.js`, `./test/**/*.js`]
   const expected = truncate([
     `src/binoculars.js`,
+    `src/binoculars.spec.js`,
     `src/cli.js`,
     `src/debug.js`,
     `src/utils-real-fs.spec.js`,

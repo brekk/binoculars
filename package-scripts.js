@@ -119,9 +119,16 @@ module.exports = {
     test: {
       covered: {
         description: `run covered tests`,
-        script: `cross-env NODE_ENV=test nyc ava --verbose src/*.spec.js`
+        script: `cross-env NODE_ENV=test nyc ava src/*.spec.js`
       },
       description: `run lint and tests`,
+      integration: {
+        description: `run integration tests`,
+        script: series(
+          `nps dist`,
+          `ava --verbose tests/integration.js`
+        )
+      },
       log: {
         description: `run tests and save logfile`,
         script: `npm run test:covered > test-output.log`
