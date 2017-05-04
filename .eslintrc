@@ -71,8 +71,18 @@
       "js": "never",
       "validation": "always",
       "task": "always"
-    }]
+    }],
+    "better/no-fors": 2,
+    "better/no-new": 2,
+    "better/no-reassigns": 2,
+    "better/no-switches": 2,
+    "better/no-variable-declaration": 2,
+    "better/no-instanceofs": 2,
+    "better/no-undefined": 2,
+    "better/no-whiles": 2,
+    "better/explicit-return": 2,
+    "better/no-function-expressions": 2
   },
-  "extends": ["standard"],
-  "plugins": ["babel", "fp", "import", "ava"]
+  "extends": ["standard", "plugin:ava/recommended"],
+  "plugins": ["babel", "better", "fp", "import", "ava"]
 }
