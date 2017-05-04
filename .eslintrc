@@ -23,7 +23,7 @@
     }],
     "no-var": 2,
     "eqeqeq": [2, "smart"],
-    "arrow-parens": [2, "always"],
+    "arrow-parens": 0,
     "consistent-this": 2,
     "func-names": [2],
     "generator-star-spacing": [2, "after"],
@@ -38,11 +38,6 @@
       "varsIgnorePattern": "^__"
     }],
     "object-curly-spacing": 0,
-    "sort-keys": 2,
-    "object-property-newline": [2, {
-      "allowMultiplePropertiesPerLine": false
-    }],
-    "object-curly-newline": [2, { "minProperties": 1 }],
     "one-var": 0,
     "operator-linebreak": [2, "after"],
     "prefer-reflect": 0,
@@ -76,8 +71,40 @@
       "js": "never",
       "validation": "always",
       "task": "always"
-    }]
+    }],
+    "better/no-fors": 2,
+    "better/no-new": 2,
+    "better/no-reassigns": 2,
+    "better/no-switches": 2,
+    "better/no-variable-declaration": 2,
+    "better/no-instanceofs": 2,
+    "better/no-undefined": 2,
+    "better/no-whiles": 2,
+    "better/explicit-return": 2,
+    "better/no-function-expressions": 2,
+    "ava/assertion-arguments": 2,
+    "ava/no-async-fn-without-await": 2,
+    "ava/no-duplicate-modifiers": 2,
+    "ava/no-identical-title": 2,
+    "ava/no-ignored-test-files": 2,
+    "ava/no-invalid-end": 2,
+    "ava/no-nested-tests": 2,
+    "ava/no-only-test": 2,
+    "ava/no-skip-assert": 2,
+    "ava/no-skip-test": 2,
+    "ava/no-statement-after-end": 2,
+    "ava/no-todo-implementation": 2,
+    "ava/no-todo-test": 1,
+    "ava/no-unknown-modifiers": 2,
+    "ava/prefer-async-await": 0,
+    "ava/prefer-power-assert": 0,
+    "ava/test-ended": 2,
+    "ava/test-title": [2, "if-multiple"],
+    "ava/use-t-well": 2,
+    "ava/use-t": 2,
+    "ava/use-test": 2,
+    "ava/use-true-false": 2
   },
   "extends": ["standard"],
-  "plugins": ["babel", "fp", "import", "ava"]
+  "plugins": ["babel", "better", "fp", "import", "ava"]
 }
