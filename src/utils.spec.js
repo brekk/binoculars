@@ -19,7 +19,7 @@ import { relative as fixture, absolutePathedObject } from "./utils.fixture"
 /* eslint-disable fp/no-unused-expression */
 /* eslint-disable better/explicit-return */
 
-test(`collectKeys`, t => {
+test(`collectKeys`, (t) => {
   t.plan(3)
   t.is(typeof collectKeys, `function`)
   const data = {
@@ -34,7 +34,7 @@ test(`collectKeys`, t => {
   t.deepEqual(out, expected)
   t.throws(() => collectKeys(`butts`, data), `Cannot convert undefined or null to object`)
 })
-test(`findModules`, t => {
+test(`findModules`, (t) => {
   t.plan(2)
   t.is(typeof findModules, `function`)
   const fixed = findModules(fixture)
@@ -52,7 +52,7 @@ test(`findModules`, t => {
     `get-es-imports-exports`
   ])
 })
-test(`testStringForModules`, t => {
+test(`testStringForModules`, (t) => {
   t.plan(2)
   t.is(typeof testStringForModules, `function`)
   t.deepEqual(
@@ -72,7 +72,7 @@ test(`testStringForModules`, t => {
   )
 })
 
-test(`generateRelativePaths`, t => {
+test(`generateRelativePaths`, (t) => {
   t.plan(2)
   t.is(typeof generateRelativePaths, `function`)
   const output = generateRelativePaths(true, __dirname, fixture)
@@ -148,7 +148,7 @@ test(`generateRelativePaths`, t => {
     ]
   })
 })
-test(`makeRelativeConditionally`, t => {
+test(`makeRelativeConditionally`, (t) => {
   t.plan(3)
   t.is(typeof makeRelativeConditionally, `function`)
   const a = `./path/whatever/cool/dot/com/science.js`
@@ -158,7 +158,7 @@ test(`makeRelativeConditionally`, t => {
   t.is(out1, `../../../../../../../../yeah/what.js`)
   t.is(out2, `../../yeah/what.js`)
 })
-test(`relativeKeys`, t => {
+test(`relativeKeys`, (t) => {
   t.plan(2)
   t.is(typeof relativeKeys, `function`)
   const out = relativeKeys(true, `coolpants/dot/com`, absolutePathedObject)
@@ -169,13 +169,13 @@ test(`relativeKeys`, t => {
   }
   t.deepEqual(out, expected)
 })
-test(`xtrace`, t => {
+test(`xtrace`, (t) => {
   t.plan(2)
   t.is(typeof xtrace, `function`)
-  const two = xtrace(x => x, `1`, x => x, `2`)
+  const two = xtrace((x) => x, `1`, (x) => x, `2`)
   t.is(two, `2`)
 })
-test(`alterLocalKey`, t => {
+test(`alterLocalKey`, (t) => {
   t.plan(2)
   const input = [
     `a`,
@@ -193,7 +193,7 @@ test(`alterLocalKey`, t => {
   ])
   t.deepEqual(falseOutputs, input)
 })
-test(`addModules`, t => {
+test(`addModules`, (t) => {
   t.plan(2)
   t.is(typeof addModules, `function`)
   const output = addModules(fixture)

@@ -13,15 +13,15 @@ import { absolutePathedObject } from "./utils.fixture"
 const thisFileIsh = `..`
 const alter = relativeKeys(true, thisFileIsh)
 const alter2 = makeRelativeConditionally(true, thisFileIsh)
-const manipulateObjects = x => (typeof x === `object` && !Array.isArray(x) ? alter(x) : x)
+const manipulateObjects = (x) => (typeof x === `object` && !Array.isArray(x) ? alter(x) : x)
 
 // so absolute paths are useful, but we will never be able to test cross computer
-const truncate = map(x => x.split(`/`).slice(-2).join(`/`))
+const truncate = map((x) => x.split(`/`).slice(-2).join(`/`))
 
 const fixIt = pipe(
   toPairs,
   map(([k, v]) => [k, manipulateObjects(v)]),
-  map(raw => {
+  map((raw) => {
     const [k, v] = raw
     if (k === `loadedFiles`) {
       return [k, map(alter2, v)]
@@ -35,12 +35,12 @@ const fixIt = pipe(
 /* eslint-disable sort-keys */
 /* eslint-disable better/explicit-return */
 
-test.cb(`lookUpDependencies`, t => {
+test.cb(`lookUpDependencies`, (t) => {
   t.plan(2)
   t.is(typeof lookUpDependencies, `function`)
   // console.log(`input`, file)
   const files = [__filename]
-  lookUpDependencies({}, files).fork(t.end, results => {
+  lookUpDependencies({}, files).fork(t.end, (results) => {
     // console.log(`results`, fixIt(results))
     t.deepEqual(fixIt(results), {
       imports: {
@@ -117,7 +117,7 @@ test.cb(`lookUpDependencies`, t => {
   })
 })
 
-test(`relativizeDataPaths`, t => {
+test(`relativizeDataPaths`, (t) => {
   t.is(typeof relativizeDataPaths, `function`)
   const input = {
     directory: `yes`,
@@ -143,7 +143,7 @@ test(`relativizeDataPaths`, t => {
   })
 })
 
-test.cb(`flobby`, t => {
+test.cb(`flobby`, (t) => {
   t.plan(2)
   t.is(typeof flobby, `function`)
   const inputs = [`./src/*.js`, `./test/**/*.js`]
@@ -157,7 +157,7 @@ test.cb(`flobby`, t => {
     `src/utils.js`,
     `src/utils.spec.js`
   ])
-  flobby(inputs).fork(t.end, output => {
+  flobby(inputs).fork(t.end, (t) => {
     t.deepEqual(truncate(output), expected)
     t.end()
   })

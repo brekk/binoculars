@@ -27,7 +27,7 @@ const sources = {
 const starting = resolve(`..`, here)
 chdir(starting)
 
-test.cb(`running the tool against its source results in a combined blob of info`, t => {
+test.cb(`running the tool against its source results in a combined blob of info`, (t) => {
   t.plan(2)
   t.is(typeof binoculars, `function`)
   const config = {}
@@ -141,7 +141,7 @@ test.cb(`running the tool against its source results in a combined blob of info`
       `chalk`
     ]
   }
-  binoculars(config, dir, exe).fork(t.fail, blob => {
+  binoculars(config, dir, exe).fork(t.fail, (blob) => {
     t.deepEqual(dissoc(`directory`, blob), expected)
     t.end()
   })
