@@ -1,6 +1,6 @@
 {
   "name": "binoculars",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "a tool for relating source files",
   "main": "index.js",
   "author": "brekk bockrath",
