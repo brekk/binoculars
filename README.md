@@ -1,10 +1,4 @@
-```
-  ____ ___ _   _  ___   ____ _   _ _        _    ____  ____  
- | __ )_ _| \ | |/ _ \ / ___| | | | |      / \  |  _ \/ ___|
- |  _ \| ||  \| | | | | |   | | | | |     / _ \ | |_) \___ \
- | |_) | || |\  | |_| | |___| |_| | |___ / ___ \|  _ < ___) |
- |____/___|_| \_|\___/ \____|\___/|_____/_/   \_\_| \_\____/
-```
+![binoculars](https://cdn.rawgit.com/brekk/binoculars/49afdfa/logo.svg)
 
 A tool for drawing relationships between source code files.
 
