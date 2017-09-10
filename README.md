@@ -6,6 +6,8 @@ A tool for drawing relationships between source code files.
 
 #### Scripts
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/brekk/binoculars.svg)](https://greenkeeper.io/)
+
 * `npm run build` - do a per file conversion from /src to /lib
 * `npm run build.cli` - convert cli
 * `npm run build.source` - convert files
